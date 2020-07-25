@@ -1,0 +1,51 @@
+AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  WordServiceExistenceProcessor:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: WordServiceExistenceProcessor
+      Handler: WordServiceExistenceProcessor::WordServiceExistenceProcessor.Function::FunctionHandlerAsync
+      Description: Check existence of a word
+      Role:
+        Fn::GetAtt:
+          - WordServiceExistenceProcessorRole
+          - Arn
+      Code:
+        S3Bucket: party-games-functions
+        S3Key: WordServiceExistenceProcessorCode
+      Runtime: dotnetcore3.1
+      
+  WordServiceExistenceProcessorRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+              - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Description: IAM role for the word service existence processor
+      Path: /
+      Policies:
+        - PolicyName: AWSLambdaBasicExecutionRole
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource: '*'
+        - PolicyName: AmazonS3FullAccess
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: 's3:*'
+                Resource:
+                  - 'arn:aws:s3:::exchange-data-raw'
+                  - 'arn:aws:s3:::Exchange-data-raw/*'

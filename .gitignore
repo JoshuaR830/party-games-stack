@@ -20,6 +20,10 @@ nupkg/
 *.sln.docstates
 **vscode
 
+# AWS lambda setup
+**dist.zip
+**response.json
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/

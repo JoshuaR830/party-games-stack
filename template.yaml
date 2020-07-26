@@ -14,6 +14,20 @@ Resources:
         S3Bucket: party-games-functions
         S3Key: WordServiceExistenceProcessorCode
       Runtime: dotnetcore3.1
+
+  WordTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - 
+          AttributeName: "Word"
+          AttributeType: "S"
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        -
+          AttributeName: "Word"
+          KeyType: "HASH"
+      TableName: "WordTable"
       
   WordServiceExistenceProcessorRole:
     Type: AWS::IAM::Role
@@ -40,6 +54,20 @@ Resources:
                   - 'logs:CreateLogStream'
                   - 'logs:PutLogEvents'
                 Resource: '*'
+        - PolicyName: ReadWriteTable
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'dynamodb:BatchGetItem'
+                  - 'dynamodb:GetItem'
+                  - 'dynamodb:Query'
+                  - 'dynamodb:Scan'
+                  - 'dynamodb:BatchWriteItem'
+                  - 'dynamodb:PutItem'
+                  - 'dynamodb:UpdateItem'
+                Resource: 'arn:aws:dynamodb:*:*:table/WordTable'
         - PolicyName: AmazonS3FullAccess
           PolicyDocument:
             Version: 2012-10-17

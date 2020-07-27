@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amazon.Lambda.Core;
@@ -19,6 +20,7 @@ namespace WordServiceExistenceProcessor
         /// <returns></returns>
         public async Task<string> FunctionHandler(string input, ILambdaContext context)
         {
+            Console.WriteLine(input);
             var client = new AmazonDynamoDBClient();
             var request = new PutItemRequest
             {

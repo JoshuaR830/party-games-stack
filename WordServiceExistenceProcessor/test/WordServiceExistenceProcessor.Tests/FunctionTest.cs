@@ -1,14 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-using Xunit;
-using Amazon.Lambda.Core;
 using Amazon.Lambda.TestUtilities;
-
-using WordServiceExistenceProcessor;
-
+using Xunit;
+using FluentAssertions;
 namespace WordServiceExistenceProcessor.Tests
 {
     public class FunctionTest
@@ -18,11 +10,11 @@ namespace WordServiceExistenceProcessor.Tests
         {
 
             // Invoke the lambda function and confirm the string was upper cased.
-            var function = new Function();
+            var function = new WordServiceExistenceProcessor.Function();
             var context = new TestLambdaContext();
             var upperCase = function.FunctionHandler("hello world", context);
 
-            Assert.Equal("HELLO WORLD", upperCase);
+            upperCase.Should().Be("HELLO WORLD");
         }
     }
 }

@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
-using Amazon.Lambda.Core;
 using Amazon.DynamoDBv2;
-using Microsoft.Extensions.DependencyInjection;
 using Amazon.Extensions.NETCore.Setup;
+using Amazon.Lambda.Core;
+using Microsoft.Extensions.DependencyInjection;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]

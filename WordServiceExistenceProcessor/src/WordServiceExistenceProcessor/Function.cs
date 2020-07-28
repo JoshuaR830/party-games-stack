@@ -1,17 +1,30 @@
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amazon.Lambda.Core;
 using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.Model;
+using Microsoft.Extensions.DependencyInjection;
+using Amazon.Extensions.NETCore.Setup;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
-
 namespace WordServiceExistenceProcessor
 {
     public class Function
     {
+        private ServiceCollection _serviceCollection;
+        
+        public Function()
+        {
+            ConfigureServices();
+        }
+
+        private void ConfigureServices()
+        {
+            _serviceCollection = new ServiceCollection();
+            _serviceCollection.AddDefaultAWSOptions(new AWSOptions());
+            _serviceCollection.AddAWSService<IAmazonDynamoDB>();
+            _serviceCollection.AddTransient<Handler>();
+        }
+        
         /// <summary>
         /// A simple function that takes a string and does a ToUpper
         /// </summary>
@@ -20,18 +33,10 @@ namespace WordServiceExistenceProcessor
         /// <returns></returns>
         public async Task<string> FunctionHandler(string input, ILambdaContext context)
         {
-            Console.WriteLine(input);
-            var client = new AmazonDynamoDBClient();
-            var request = new PutItemRequest
+            using (ServiceProvider serviceProvider = _serviceCollection.BuildServiceProvider())
             {
-                TableName = "WordTable",
-                Item = new Dictionary<string, AttributeValue>
-                {
-                    { "Word", new AttributeValue { S = input}}
-                }
-            };
-            await client.PutItemAsync(request);
-            return input?.ToUpper();
+                return await serviceProvider.GetService<Handler>().Handle(input);
+            }
         }
     }
 }

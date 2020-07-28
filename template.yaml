@@ -22,13 +22,33 @@ Resources:
         - 
           AttributeName: "Word"
           AttributeType: "S"
-      BillingMode: PAY_PER_REQUEST
+      BillingMode: PROVISIONED
+      ProvisionedThroughput:
+        ReadCapacityUnits: 20
+        WriteCapacityUnits: 20
       KeySchema:
         -
           AttributeName: "Word"
           KeyType: "HASH"
       TableName: "WordTable"
       
+  CategoryTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        -
+          AttributeName: "Word"
+          AttributeType: "S"
+      BillingMode: PROVISIONED
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      KeySchema:
+        -
+          AttributeName: "Word"
+          KeyType: "HASH"
+      TableName: "CategoryTable"
+
   WordServiceExistenceProcessorRole:
     Type: AWS::IAM::Role
     Properties:
@@ -67,7 +87,9 @@ Resources:
                   - 'dynamodb:BatchWriteItem'
                   - 'dynamodb:PutItem'
                   - 'dynamodb:UpdateItem'
-                Resource: 'arn:aws:dynamodb:*:*:table/WordTable'
+                Resource: 
+                  - 'arn:aws:dynamodb:*:*:table/WordTable'
+                  - 'arn:aws:dynamodb:*:*:table/CategoryTable'
         - PolicyName: AmazonS3FullAccess
           PolicyDocument:
             Version: 2012-10-17

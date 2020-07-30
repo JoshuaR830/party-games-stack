@@ -33,5 +33,7 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: eu-west-2
     - name: Deploy
-      run: dotnet lambda deploy-function
+      run: |
+        dotnet tool install -g Amazon.Lambda.Tools
+        dotnet lambda deploy-function
       working-directory: ./WordServiceExistenceProcessor/src/WordServiceExistenceProcessor

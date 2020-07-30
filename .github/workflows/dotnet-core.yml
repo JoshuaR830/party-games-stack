@@ -32,8 +32,13 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: eu-west-2
-    - name: Deploy
+    - name: Deploy lambda
       run: |
         dotnet tool install -g Amazon.Lambda.Tools
         dotnet lambda deploy-function --function-name WordServiceExistenceProcessor
       working-directory: ./WordServiceExistenceProcessor/src/WordServiceExistenceProcessor
+    - name: Update stack
+      uses: aws-actions/aws-cloudformation-github-deploy@1
+      with:
+        name: party-games
+        template: template.yaml

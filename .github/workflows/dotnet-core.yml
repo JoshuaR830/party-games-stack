@@ -10,7 +10,7 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
+    
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET Core
@@ -18,9 +18,8 @@ jobs:
       with:
         dotnet-version: 3.1.301
     - name: Install dependencies
-      run: |
-            dotnet restore
-            cd WordServiceExistenceProcessor/src/WordServiceExistenceProcessor
+      run: dotnet restore
+      working-directory: ./WordServiceExistenceProcessor/src/WordServiceExistenceProcessor
     - name: Build
       run: dotnet build --configuration Release --no-restore
     - name: Test

@@ -38,7 +38,7 @@ jobs:
         dotnet lambda deploy-function --function-name WordServiceExistenceProcessor
       working-directory: ./WordServiceExistenceProcessor/src/WordServiceExistenceProcessor
     - name: Update stack
-      uses: aws-actions/aws-cloudformation-github-deploy@1
+      uses: aws-actions/aws-cloudformation-github-deploy@v1
       with:
         name: party-games
         template: template.yaml

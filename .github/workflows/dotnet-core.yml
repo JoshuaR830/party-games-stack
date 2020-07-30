@@ -22,8 +22,10 @@ jobs:
       working-directory: ./WordServiceExistenceProcessor/src/WordServiceExistenceProcessor
     - name: Build
       run: dotnet build --configuration Release --no-restore
+      working-directory: ./WordServiceExistenceProcessor/src/WordServiceExistenceProcessor
     - name: Test
       run: dotnet test --no-restore --verbosity normal
+      working-directory: ./WordServiceExistenceProcessor/src/WordServiceExistenceProcessor
     - name: Configure credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -32,3 +34,4 @@ jobs:
         aws-region: eu-west-2
     - name: Deploy
       run: dotnet lambda deploy-function
+      working-directory: ./WordServiceExistenceProcessor/src/WordServiceExistenceProcessor

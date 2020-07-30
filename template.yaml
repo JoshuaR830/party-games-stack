@@ -24,8 +24,8 @@ Resources:
           AttributeType: "S"
       BillingMode: PROVISIONED
       ProvisionedThroughput:
-        ReadCapacityUnits: 20
-        WriteCapacityUnits: 20
+        ReadCapacityUnits: 15
+        WriteCapacityUnits: 15
       KeySchema:
         -
           AttributeName: "Word"

@@ -42,3 +42,4 @@ jobs:
       with:
         name: party-games
         template: template.yaml
+        no-fail-on-empty-changeset: 1

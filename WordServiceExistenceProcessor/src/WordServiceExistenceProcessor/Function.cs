@@ -31,7 +31,7 @@ namespace WordServiceExistenceProcessor
         /// <param name="input"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public async Task<string> FunctionHandler(string input, ILambdaContext context)
+        public async Task<bool> FunctionHandler(string input, ILambdaContext context)
         {
             using (ServiceProvider serviceProvider = _serviceCollection.BuildServiceProvider())
             {

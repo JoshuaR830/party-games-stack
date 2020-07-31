@@ -16,7 +16,7 @@ namespace WordServiceExistenceProcessor
             _dynamoDb = dynamoDb;
         }
 
-        public async Task<string> Handle(string input)
+        public async Task<bool> Handle(string input)
         {
             Console.WriteLine(input);
             // var request = new PutItemRequest
@@ -29,27 +29,28 @@ namespace WordServiceExistenceProcessor
             // };
             //
             
-            // var request = new GetItemRequest
-            // {
-            //     TableName = "WordTable",
-            //     Key = new Dictionary<string, AttributeValue>
-            //     {
-            //         { "Word", new AttributeValue { S = input}}
-            //     },
-            //     ProjectionExpression = "#s, #temp, #perm",
-            //     ExpressionAttributeNames = new Dictionary<string, string>{
-            //         {"#s", "Status"},
-            //         {"#temp", "TemporaryDefinition"},
-            //         {"#perm", "PermanentDefinition"}
-            //     }
-            // };
+            var request = new GetItemRequest
+            {
+                TableName = "WordTable",
+                Key = new Dictionary<string, AttributeValue>
+                {
+                    { "Word", new AttributeValue { S = input}}
+                },
+                ProjectionExpression = "#s, #temp, #perm",
+                ExpressionAttributeNames = new Dictionary<string, string>{
+                    {"#s", "Status"},
+                    {"#temp", "TemporaryDefinition"},
+                    {"#perm", "PermanentDefinition"}
+                }
+            };
             
             
             // await _dynamoDb.PutItemAsync(request);
-            // var response = await _dynamoDb.GetItemAsync(request);
-            // return JsonConvert.SerializeObject(response);
+            var response = await _dynamoDb.GetItemAsync(request);
 
-            return input.ToUpper();
+            Console.WriteLine(JsonConvert.SerializeObject(response));
+
+            return response.IsItemSet;
         }
     }
 }

@@ -4,16 +4,17 @@ using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using Newtonsoft.Json;
+using WordServiceExistenceProcessor.DynamoDB;
 
 namespace WordServiceExistenceProcessor
 {
     public class Handler
     {
-        private readonly IAmazonDynamoDB _dynamoDb;
+        private readonly IGetItemRequestWrapper _dynamoDbWrapper;
         
-        public Handler(IAmazonDynamoDB dynamoDb)
+        public Handler(IGetItemRequestWrapper dynamoDbWrapper)
         {
-            _dynamoDb = dynamoDb;
+            _dynamoDbWrapper = dynamoDbWrapper;
         }
 
         public async Task<bool> Handle(string input)
@@ -28,28 +29,9 @@ namespace WordServiceExistenceProcessor
             //     }
             // };
             //
-            
-            var request = new GetItemRequest
-            {
-                TableName = "WordTable",
-                Key = new Dictionary<string, AttributeValue>
-                {
-                    { "Word", new AttributeValue { S = input}}
-                },
-                ProjectionExpression = "#s, #temp, #perm",
-                ExpressionAttributeNames = new Dictionary<string, string>{
-                    {"#s", "Status"},
-                    {"#temp", "TemporaryDefinition"},
-                    {"#perm", "PermanentDefinition"}
-                }
-            };
-            
-            
-            // await _dynamoDb.PutItemAsync(request);
-            var response = await _dynamoDb.GetItemAsync(request);
 
+            var response = await _dynamoDbWrapper.GetDictionaryItem(input);
             Console.WriteLine(JsonConvert.SerializeObject(response));
-
             return response.IsItemSet;
         }
     }

@@ -23,7 +23,7 @@ namespace WordServiceExistenceProcessor
             _webDictionaryRequestHelper = webDictionaryRequestHelper;
         }
 
-        public async Task<bool> Handle(string input)
+        public async Task<WordResponseWrapper> Handle(string input)
         {
             Console.WriteLine(input);
             // var request = new PutItemRequest
@@ -36,32 +36,36 @@ namespace WordServiceExistenceProcessor
             // };
             //
 
-            var response2 = await _wordExistenceHelper.GetWordWithSuffix(input);
+            var response = await _wordExistenceHelper.GetWordWithSuffix(input);
+            var finished = new WordResponseWrapper(false);
 
-            if (response2 != null)
+            Console.WriteLine($"Batch response: {response?.WordResponse?.Word}");
+
+            if (response == null)
+                return finished;
+            
+            if (input != response.WordResponse.Word)
             {
-                if (input != response2?.WordResponse?.Word)
-                {
-                    Console.WriteLine("Hmm - looks like there is a problem");
-                    var responseText = _webDictionaryRequestHelper.MakeContentRequest(response2.WordResponse?.Word)
-                        .ToLower();
-                    if (!responseText.Contains("word forms"))
-                        return false;
-
-                    var finished = new WordResponseWrapper(false);
-
-                    if (responseText.Contains(input))
-                        finished = new WordResponseWrapper(true, new WordData(input, response2?.WordResponse?.Definition, WordStatus.Temporary));
-
-                    Console.WriteLine($"Processed response: {JsonConvert.SerializeObject(finished)}");
-                }
+                Console.WriteLine("Hmm - looks like there is a problem");
+                
+                var responseText = _webDictionaryRequestHelper.MakeContentRequest(response.WordResponse?.Word)
+                    .ToLower();
+                if (!responseText.Contains("word forms"))
+                    return finished;
+                
+                if (responseText.Contains(input))
+                    finished = new WordResponseWrapper(true, new WordData(input, response?.WordResponse?.Definition, WordStatus.Temporary));
             }
 
-            Console.WriteLine($"Batch response: {response2?.WordResponse?.Word}");
+            if (input == response.WordResponse.Word)
+                finished = new WordResponseWrapper(true, new WordData(input, response?.WordResponse?.Definition, WordStatus.Temporary));
+
+            Console.WriteLine($"Processed response: {JsonConvert.SerializeObject(finished)}");
             
-            var response = await _dynamoDbWrapper.GetDictionaryItem(input);
-            Console.WriteLine(JsonConvert.SerializeObject(response));
-            return response.IsItemSet;
+            var response3 = await _dynamoDbWrapper.GetDictionaryItem(input);
+            Console.WriteLine(JsonConvert.SerializeObject(response3));
+            
+            return finished;
         }
     }
 }

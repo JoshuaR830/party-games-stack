@@ -1,6 +1,7 @@
 ﻿// using Chat.WordGame.LocalDictionaryHelpers;
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2.Model;
 using WordServiceExistenceProcessor.DynamoDB;
@@ -56,7 +57,10 @@ namespace WordServiceExistenceProcessor.Words.WordService
 
         public async Task<WordResponseWrapper> GetWordWithSuffix(string word)
         {
-            // var batchResponse = await _dynamoDbBatchWrapper.GetDictionaryItems(new List<string> {"test", "hello"});
+
+            var something = GetWordFragments(word);
+            
+            var batchResponse = await _dynamoDbBatchWrapper.GetDictionaryItems(new List<string> {"test", "hello"});
             //
             // var wordResponses = new List<WordResponseWrapper>();
             // foreach (var itemsResponse in batchResponse.Responses)
@@ -79,6 +83,11 @@ namespace WordServiceExistenceProcessor.Words.WordService
             //     }
             // }
             throw new NotImplementedException();
+        }
+
+        public List<string> GetWordFragments(string word)
+        {
+            return new List<string>();
         }
     }
 }

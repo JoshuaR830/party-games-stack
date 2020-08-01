@@ -5,15 +5,13 @@ namespace WordServiceExistenceProcessor.Words.WordService
     public class WordData
     {
         public string Word { get; }
-        public string TemporaryDefinition { get; }
-        public string PermanentDefinition { get; }
+        public string Definition { get; }
         public WordStatus Status { get; }
 
-        public WordData(string word, string temporaryDefinition, string permanentDefinition, WordStatus status)
+        public WordData(string word, string definition, WordStatus status)
         {
             Word = word;
-            TemporaryDefinition = temporaryDefinition;
-            PermanentDefinition = permanentDefinition;
+            Definition = definition;
             Status = status;
         }
     }

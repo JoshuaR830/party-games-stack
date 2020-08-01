@@ -13,7 +13,7 @@ namespace WordServiceExistenceProcessor.Tests.WordServiceTests
     {
         private const string SuccessWord = "test";
         private const string FailWord = "notAWord";
-        private readonly WordService _wordService;
+        private readonly WordExistenceHelper _wordService;
 
         public WordStatusHelper()
         {
@@ -25,8 +25,7 @@ namespace WordServiceExistenceProcessor.Tests.WordServiceTests
                 {
                     ["Word"] = new AttributeValue {S = SuccessWord},
                     ["Status"] = new AttributeValue {S = "Temporary"},
-                    ["TemporaryDefinition"] = new AttributeValue {S = "Temporary definition"},
-                    ["PermanentDefinition"] = new AttributeValue {S = "Permanent definition"}
+                    ["TemporaryDefinition"] = new AttributeValue {S = "Temporary definition"}
                 }
             });
             
@@ -35,14 +34,14 @@ namespace WordServiceExistenceProcessor.Tests.WordServiceTests
                 IsItemSet = false
             });
             
-            _wordService = new WordService(dynamoDbWrapper);
+            _wordService = new WordExistenceHelper(dynamoDbWrapper);
         }
         
         [Fact]
         public async Task WhenWordExistsASuccessfulWrappedResponseShouldBeReturned()
         {
             var response = await _wordService.GetWordStatus(SuccessWord);
-            var expected = new WordResponseWrapper(true, new WordData(SuccessWord, "Temporary definition", "Permanent definition", WordStatus.Temporary));
+            var expected = new WordResponseWrapper(true, new WordData(SuccessWord, "Temporary definition", WordStatus.Temporary));
 
             response.ShouldBeEquivalentTo(expected);
         }

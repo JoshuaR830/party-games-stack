@@ -5,6 +5,7 @@ using Xunit;
 using FluentAssertions;
 using NSubstitute;
 using WordServiceExistenceProcessor.DynamoDB;
+using WordServiceExistenceProcessor.Words.WebHelpers;
 using WordServiceExistenceProcessor.Words.WordService;
 
 namespace WordServiceExistenceProcessor.Tests.WordServiceTests
@@ -18,6 +19,7 @@ namespace WordServiceExistenceProcessor.Tests.WordServiceTests
             var dynamoDbWrapper = Substitute.For<IGetItemRequestWrapper>();
             var dynamoDbBatchWrapper = Substitute.For<IBatchGetItemRequestWrapper>();
             var wordExistenceHelper = Substitute.For<IWordExistenceHelper>();
+            var webDictionaryRequestHelper = Substitute.For<IWebDictionaryRequestHelper>();
 
             dynamoDbWrapper.GetDictionaryItem(input).Returns(new GetItemResponse
             {
@@ -28,7 +30,7 @@ namespace WordServiceExistenceProcessor.Tests.WordServiceTests
                 }
             });
             
-            var handler = new Handler(dynamoDbWrapper, dynamoDbBatchWrapper, wordExistenceHelper);
+            var handler = new Handler(dynamoDbWrapper, dynamoDbBatchWrapper, wordExistenceHelper, webDictionaryRequestHelper);
             var isWord = await handler.Handle(input);
 
             isWord.Should().BeTrue();
@@ -41,13 +43,14 @@ namespace WordServiceExistenceProcessor.Tests.WordServiceTests
             var dynamoDbWrapper = Substitute.For<IGetItemRequestWrapper>();
             var dynamoDbBatchWrapper = Substitute.For<IBatchGetItemRequestWrapper>();
             var wordExistenceHelper = Substitute.For<IWordExistenceHelper>();
+            var webDictionaryRequestHelper = Substitute.For<IWebDictionaryRequestHelper>();
 
             dynamoDbWrapper.GetDictionaryItem(input).Returns(new GetItemResponse
             {
                 IsItemSet = false
             });
             
-            var handler = new Handler(dynamoDbWrapper, dynamoDbBatchWrapper, wordExistenceHelper);
+            var handler = new Handler(dynamoDbWrapper, dynamoDbBatchWrapper, wordExistenceHelper, webDictionaryRequestHelper);
             var isWord = await handler.Handle(input);
 
             isWord.Should().BeFalse();

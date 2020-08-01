@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2.Model;
 using WordServiceExistenceProcessor.DynamoDB;
@@ -87,7 +88,27 @@ namespace WordServiceExistenceProcessor.Words.WordService
 
         public List<string> GetWordFragments(string word)
         {
-            return new List<string>();
+            
+            var endings = new List<string> {"ning", "ing", "ed", "er", "es", "s", "d"};
+
+            endings = endings
+                .Where(x => x.Length < word.Length)
+                .OrderByDescending(s => s.Length)
+                .ToList();
+            
+            var myWordEndings = new List<string> { word };
+
+            foreach (var ending in endings)
+            {
+                var shortenedWord = word.Remove(word.Length - ending.Length);
+
+                if (word.Substring(word.Length - ending.Length) != ending)
+                    continue;
+                
+                myWordEndings.Add(shortenedWord); 
+            }
+
+            return myWordEndings;
         }
     }
 }

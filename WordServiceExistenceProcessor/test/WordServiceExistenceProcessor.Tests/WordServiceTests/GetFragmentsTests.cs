@@ -25,7 +25,7 @@ namespace WordServiceExistenceProcessor.Tests.WordServiceTests
             var word = "cheeses";
             var response = _wordExistenceHelper.GetWordFragments(word);
 
-            var expected = new List<string> {word, "cheese", "chee"};
+            var expected = new List<string> {word, "cheese", "chees"};
             response.Should().BeEquivalentTo(expected);
         }
 

@@ -36,15 +36,14 @@ namespace WordServiceExistenceProcessor.Words.WordService
 
             var wordItem = wordResponse.Item;
 
-            var definition = this.GetDefinition(wordResponse);
+            var definition = GetDefinition(wordResponse.Item);
             var wordData = new WordData(wordItem["Word"].S, definition, Enum.Parse<WordStatus>(wordItem["Status"].S) );
             
             return new WordResponseWrapper(true, wordData);
         }
 
-        public string GetDefinition(GetItemResponse wordResponse)
+        public string GetDefinition(Dictionary<string, AttributeValue> wordItem)
         {
-            var wordItem = wordResponse.Item;
             var definition = "";
 
             if (wordItem.ContainsKey("TemporaryDefinition"))
@@ -59,9 +58,23 @@ namespace WordServiceExistenceProcessor.Words.WordService
         public async Task<WordResponseWrapper> GetWordWithSuffix(string word)
         {
 
-            var something = GetWordFragments(word);
+            var potentialWords = GetWordFragments(word);
             
-            var batchResponse = await _dynamoDbBatchWrapper.GetDictionaryItems(new List<string> {"test", "hello"});
+            var batch = await _dynamoDbBatchWrapper.GetDictionaryItems(potentialWords);
+
+            foreach (var response in batch.Responses)
+            {
+                Console.WriteLine(response.Key);
+                Console.WriteLine(response.Value);
+                
+                foreach (var thing in response.Value)
+                {
+                    var definition = GetDefinition(thing);
+                }
+            }
+            
+
+            
             //
             // var wordResponses = new List<WordResponseWrapper>();
             // foreach (var itemsResponse in batchResponse.Responses)
@@ -83,13 +96,13 @@ namespace WordServiceExistenceProcessor.Words.WordService
             //         Console.WriteLine(value);
             //     }
             // }
-            throw new NotImplementedException();
+            return new WordResponseWrapper(false);
         }
 
         public List<string> GetWordFragments(string word)
         {
             
-            var endings = new List<string> {"ning", "ing", "ed", "er", "es", "s", "d"};
+            var endings = new List<string> {"ning", "ing", "ed", "er", "es", "ly", "s", "d"};
 
             endings = endings
                 .Where(x => x.Length < word.Length)

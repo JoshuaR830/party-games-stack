@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.Model;
 using Amazon.Extensions.NETCore.Setup;
 using Amazon.Lambda.Core;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,6 +24,7 @@ namespace WordServiceExistenceProcessor
             _serviceCollection.AddDefaultAWSOptions(new AWSOptions());
             _serviceCollection.AddAWSService<IAmazonDynamoDB>();
             _serviceCollection.AddTransient<IGetItemRequestWrapper, GetItemRequestWrapper>();
+            _serviceCollection.AddTransient<IBatchGetItemRequestWrapper, BatchGetItemRequestWrapper>();
             _serviceCollection.AddTransient<Handler>();
         }
         

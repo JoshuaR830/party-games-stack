@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.Model;
 using Newtonsoft.Json;
 using WordServiceExistenceProcessor.DynamoDB;
 
@@ -11,10 +9,12 @@ namespace WordServiceExistenceProcessor
     public class Handler
     {
         private readonly IGetItemRequestWrapper _dynamoDbWrapper;
+        private readonly IBatchGetItemRequestWrapper _dynamoDbBatchWrapper;
         
-        public Handler(IGetItemRequestWrapper dynamoDbWrapper)
+        public Handler(IGetItemRequestWrapper dynamoDbWrapper, IBatchGetItemRequestWrapper dynamoDbBatchWrapper)
         {
             _dynamoDbWrapper = dynamoDbWrapper;
+            _dynamoDbBatchWrapper = dynamoDbBatchWrapper;
         }
 
         public async Task<bool> Handle(string input)
@@ -29,6 +29,9 @@ namespace WordServiceExistenceProcessor
             //     }
             // };
             //
+
+            await _dynamoDbBatchWrapper.GetDictionaryItems(new List<string> {"test", "hello"});
+            
 
             var response = await _dynamoDbWrapper.GetDictionaryItem(input);
             Console.WriteLine(JsonConvert.SerializeObject(response));

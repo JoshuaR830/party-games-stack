@@ -57,51 +57,42 @@ namespace WordServiceExistenceProcessor.Words.WordService
 
         public async Task<WordResponseWrapper> GetWordWithSuffix(string word)
         {
-
             var potentialWords = GetWordFragments(word);
-            
             var batch = await _dynamoDbBatchWrapper.GetDictionaryItems(potentialWords);
 
-            foreach (var response in batch.Responses)
-            {
-                Console.WriteLine(response.Key);
-                Console.WriteLine(response.Value);
-                
-                foreach (var thing in response.Value)
-                {
-                    var definition = GetDefinition(thing);
-                }
-            }
-            
+            if (batch == null)
+                return new WordResponseWrapper(false);
 
+            var response = batch.Responses["WordTable"];
             
-            //
-            // var wordResponses = new List<WordResponseWrapper>();
-            // foreach (var itemsResponse in batchResponse.Responses)
-            // {
-            //     var something = itemsResponse.Value;
-            //     foreach (var thing in something)
-            //     {
-            //         var value = "";
-            //         if (thing.ContainsKey("Word"))
-            //             value += thing["Word"].S + ", ";
-            //         if (thing.ContainsKey("TemporaryDefinition"))
-            //             value += thing["TemporaryDefinition"].S + ", ";
-            //         if (thing.ContainsKey("PermanentDefinition"))
-            //             value += thing["PermanentDefinition"].S + ", ";
-            //         if (thing.ContainsKey("Status"))
-            //             value += thing["Status"].S;
-            //         
-            //         wordResponses.Add(new WordResponseWrapper(true, new WordData()));
-            //         Console.WriteLine(value);
-            //     }
-            // }
-            return new WordResponseWrapper(false);
+            if (!response.Any(x => x.ContainsKey("Word")))
+                return new WordResponseWrapper(false);
+
+            var status = WordStatus.Temporary;
+            
+            if (response.Any(x => x["Word"].S == word))
+            {
+                var myWord = response.First(x => x["Word"].S == word);
+                
+                if (myWord.ContainsKey("Status"))
+                    status = Enum.Parse<WordStatus>( myWord["Status"].S);
+                
+                return new WordResponseWrapper(true, new WordData(word, GetDefinition(myWord), status));
+            }
+
+            var alternativeWord = response.FirstOrDefault();
+            
+            if (alternativeWord == null)
+                return new WordResponseWrapper(false);
+
+            if (alternativeWord.ContainsKey("Status"))
+                status = Enum.Parse<WordStatus>(alternativeWord["Status"].S);
+            
+            return new WordResponseWrapper(true, new WordData(alternativeWord["Word"].S, GetDefinition(alternativeWord), status));
         }
 
         public List<string> GetWordFragments(string word)
         {
-            
             var endings = new List<string> {"ning", "ing", "ed", "er", "es", "ly", "s", "d"};
 
             endings = endings

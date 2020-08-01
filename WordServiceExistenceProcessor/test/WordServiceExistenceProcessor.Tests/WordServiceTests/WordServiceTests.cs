@@ -5,6 +5,7 @@ using Xunit;
 using FluentAssertions;
 using NSubstitute;
 using WordServiceExistenceProcessor.DynamoDB;
+using WordServiceExistenceProcessor.Words.WordService;
 
 namespace WordServiceExistenceProcessor.Tests.WordServiceTests
 {
@@ -16,6 +17,7 @@ namespace WordServiceExistenceProcessor.Tests.WordServiceTests
             var input = "test";
             var dynamoDbWrapper = Substitute.For<IGetItemRequestWrapper>();
             var dynamoDbBatchWrapper = Substitute.For<IBatchGetItemRequestWrapper>();
+            var wordExistenceHelper = Substitute.For<IWordExistenceHelper>();
 
             dynamoDbWrapper.GetDictionaryItem(input).Returns(new GetItemResponse
             {
@@ -26,7 +28,7 @@ namespace WordServiceExistenceProcessor.Tests.WordServiceTests
                 }
             });
             
-            var handler = new Handler(dynamoDbWrapper, dynamoDbBatchWrapper);
+            var handler = new Handler(dynamoDbWrapper, dynamoDbBatchWrapper, wordExistenceHelper);
             var isWord = await handler.Handle(input);
 
             isWord.Should().BeTrue();
@@ -38,13 +40,14 @@ namespace WordServiceExistenceProcessor.Tests.WordServiceTests
             var input = "NotAWord";
             var dynamoDbWrapper = Substitute.For<IGetItemRequestWrapper>();
             var dynamoDbBatchWrapper = Substitute.For<IBatchGetItemRequestWrapper>();
+            var wordExistenceHelper = Substitute.For<IWordExistenceHelper>();
 
             dynamoDbWrapper.GetDictionaryItem(input).Returns(new GetItemResponse
             {
                 IsItemSet = false
             });
             
-            var handler = new Handler(dynamoDbWrapper, dynamoDbBatchWrapper);
+            var handler = new Handler(dynamoDbWrapper, dynamoDbBatchWrapper, wordExistenceHelper);
             var isWord = await handler.Handle(input);
 
             isWord.Should().BeFalse();

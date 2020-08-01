@@ -17,6 +17,7 @@ namespace WordServiceExistenceProcessor.Tests.WordServiceTests.WordSuffixHelpers
         {
             var dynamoDbWrapper = Substitute.For<IGetItemRequestWrapper>();
             var dynamoDbBatchWrapper = Substitute.For<IBatchGetItemRequestWrapper>();
+            
             dynamoDbBatchWrapper.GetDictionaryItems(Arg.Any<List<string>>())
                 .Returns(Task.FromResult(new BatchGetItemResponse
                 {

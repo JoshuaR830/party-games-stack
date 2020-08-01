@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace WordServiceExistenceProcessor.Words.WordService
+﻿namespace WordServiceExistenceProcessor.Words.WordService
 {
     public class WordData
     {

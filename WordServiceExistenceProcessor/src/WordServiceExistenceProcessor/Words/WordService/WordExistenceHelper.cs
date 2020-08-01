@@ -1,6 +1,4 @@
-﻿// using Chat.WordGame.LocalDictionaryHelpers;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,13 +17,6 @@ namespace WordServiceExistenceProcessor.Words.WordService
             _dynamoDbWrapper = dynamoDbWrapper;
             _dynamoDbBatchWrapper = dynamoDbBatchWrapper;
         }
-        
-        // ToDo: see if the ending is suffixed and cut off the suffix
-        // ToDo: create a batch get for bot the suffixed word and the normal word
-        // ToDo: I think this should use 1 rcu still
-        // ToDo: batching them together makes for a more efficient system
-        // ToDo: the suffix check would have to come before the word status so that it is known
-        // ToDo: the word status check will now have to work out which response to give -> if the response doesn't exist for the big one
 
         public async Task<WordResponseWrapper> GetWordStatus(string word)
         {

@@ -1,4 +1,4 @@
-﻿﻿namespace Chat.WordGame.WordHelpers
+﻿﻿namespace WordServiceExistenceProcessor.Words.WordService
 {
     public enum WordCategory
     {

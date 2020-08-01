@@ -7,5 +7,6 @@ namespace WordServiceExistenceProcessor.Words.WordService
     {
         Task<WordResponseWrapper> GetWordStatus(string word);
         string GetDefinition(GetItemResponse wordResponse);
+        Task<WordResponseWrapper> GetWordWithSuffix(string word);
     }
 }

@@ -18,7 +18,8 @@ namespace WordServiceExistenceProcessor.Tests.WordServiceTests
         public WordStatusHelper()
         {
             var dynamoDbWrapper = Substitute.For<IGetItemRequestWrapper>();
-            
+            var dynamoDbBatchWrapper = Substitute.For<IBatchGetItemRequestWrapper>();
+
             dynamoDbWrapper.GetDictionaryItem(SuccessWord).Returns(new GetItemResponse
             {
                 Item = new Dictionary<string, AttributeValue>
@@ -34,7 +35,7 @@ namespace WordServiceExistenceProcessor.Tests.WordServiceTests
                 IsItemSet = false
             });
             
-            _wordExistenceHelper = new WordExistenceHelper(dynamoDbWrapper);
+            _wordExistenceHelper = new WordExistenceHelper(dynamoDbWrapper, dynamoDbBatchWrapper);
         }
         
         [Fact]

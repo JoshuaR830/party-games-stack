@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Amazon.DynamoDBv2.Model;
 
 namespace WordServiceExistenceProcessor.DynamoDB
 {
     public interface IBatchGetItemRequestWrapper
     {
-        Task GetDictionaryItems(List<string> words);
+        Task<BatchGetItemResponse> GetDictionaryItems(List<string> words);
     }
 }

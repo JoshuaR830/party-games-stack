@@ -10,10 +10,12 @@ namespace WordServiceExistenceProcessor.Words.WordService
     public class WordExistenceHelper : IWordExistenceHelper
     {
         private readonly IGetItemRequestWrapper _dynamoDbWrapper;
+        private readonly IBatchGetItemRequestWrapper _dynamoDbBatchWrapper;
 
-        public WordExistenceHelper(IGetItemRequestWrapper dynamoDbWrapper)
+        public WordExistenceHelper(IGetItemRequestWrapper dynamoDbWrapper, IBatchGetItemRequestWrapper dynamoDbBatchWrapper)
         {
             _dynamoDbWrapper = dynamoDbWrapper;
+            _dynamoDbBatchWrapper = dynamoDbBatchWrapper;
         }
         
         // ToDo: see if the ending is suffixed and cut off the suffix
@@ -50,6 +52,33 @@ namespace WordServiceExistenceProcessor.Words.WordService
                 definition = wordItem["PermanentDefinition"].S;
             
             return definition;
+        }
+
+        public async Task<WordResponseWrapper> GetWordWithSuffix(string word)
+        {
+            // var batchResponse = await _dynamoDbBatchWrapper.GetDictionaryItems(new List<string> {"test", "hello"});
+            //
+            // var wordResponses = new List<WordResponseWrapper>();
+            // foreach (var itemsResponse in batchResponse.Responses)
+            // {
+            //     var something = itemsResponse.Value;
+            //     foreach (var thing in something)
+            //     {
+            //         var value = "";
+            //         if (thing.ContainsKey("Word"))
+            //             value += thing["Word"].S + ", ";
+            //         if (thing.ContainsKey("TemporaryDefinition"))
+            //             value += thing["TemporaryDefinition"].S + ", ";
+            //         if (thing.ContainsKey("PermanentDefinition"))
+            //             value += thing["PermanentDefinition"].S + ", ";
+            //         if (thing.ContainsKey("Status"))
+            //             value += thing["Status"].S;
+            //         
+            //         wordResponses.Add(new WordResponseWrapper(true, new WordData()));
+            //         Console.WriteLine(value);
+            //     }
+            // }
+            throw new NotImplementedException();
         }
     }
 }

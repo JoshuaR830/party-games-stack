@@ -20,7 +20,9 @@ namespace WordServiceExistenceProcessor.Tests.WordServiceTests
         public WordDefinitionTests()
         {
             var dynamoDbWrapper = Substitute.For<IGetItemRequestWrapper>();
-            _wordExistenceHelper = new WordExistenceHelper(dynamoDbWrapper);
+            var dynamoDbBatchWrapper = Substitute.For<IBatchGetItemRequestWrapper>();
+
+            _wordExistenceHelper = new WordExistenceHelper(dynamoDbWrapper, dynamoDbBatchWrapper);
         }
 
         [Fact]

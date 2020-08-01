@@ -13,12 +13,13 @@ namespace WordServiceExistenceProcessor.Tests.WordServiceTests
     {
         private const string SuccessWord = "test";
         private const string FailWord = "notAWord";
-        private readonly WordExistenceHelper _wordService;
+        private readonly WordExistenceHelper _wordExistenceHelper;
 
         public WordStatusHelper()
         {
             var dynamoDbWrapper = Substitute.For<IGetItemRequestWrapper>();
-            
+            var dynamoDbBatchWrapper = Substitute.For<IBatchGetItemRequestWrapper>();
+
             dynamoDbWrapper.GetDictionaryItem(SuccessWord).Returns(new GetItemResponse
             {
                 Item = new Dictionary<string, AttributeValue>
@@ -34,13 +35,13 @@ namespace WordServiceExistenceProcessor.Tests.WordServiceTests
                 IsItemSet = false
             });
             
-            _wordService = new WordExistenceHelper(dynamoDbWrapper);
+            _wordExistenceHelper = new WordExistenceHelper(dynamoDbWrapper, dynamoDbBatchWrapper);
         }
         
         [Fact]
         public async Task WhenWordExistsASuccessfulWrappedResponseShouldBeReturned()
         {
-            var response = await _wordService.GetWordStatus(SuccessWord);
+            var response = await _wordExistenceHelper.GetWordStatus(SuccessWord);
             var expected = new WordResponseWrapper(true, new WordData(SuccessWord, "Temporary definition", WordStatus.Temporary));
 
             response.ShouldBeEquivalentTo(expected);
@@ -49,7 +50,7 @@ namespace WordServiceExistenceProcessor.Tests.WordServiceTests
         [Fact]
         public async Task WhenWordDoesNotExistAFailedWrappedResponseShouldBeReturned()
         {
-            var response = await _wordService.GetWordStatus(FailWord);
+            var response = await _wordExistenceHelper.GetWordStatus(FailWord);
             var expected = new WordResponseWrapper(false);
 
             response.ShouldBeEquivalentTo(expected);

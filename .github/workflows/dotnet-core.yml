@@ -25,7 +25,7 @@ jobs:
       working-directory: ./WordServiceExistenceProcessor/src/WordServiceExistenceProcessor
     - name: Test
       run: dotnet test --no-restore --verbosity normal
-      working-directory: ./WordServiceExistenceProcessor/src/WordServiceExistenceProcessor
+      working-directory: ./WordServiceExistenceProcessor/test/WordServiceExistenceProcessor.Tests
     - name: Configure credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:

@@ -20,21 +20,21 @@ namespace WordServiceExistenceProcessor.Tests.WordServiceTests
         public WordDefinitionTests()
         {
             var dynamoDbWrapper = Substitute.For<IGetItemRequestWrapper>();
-            _wordExistenceHelper = new WordExistenceHelper(dynamoDbWrapper);
+            var dynamoDbBatchWrapper = Substitute.For<IBatchGetItemRequestWrapper>();
+
+            _wordExistenceHelper = new WordExistenceHelper(dynamoDbWrapper, dynamoDbBatchWrapper);
         }
 
         [Fact]
         public void WhenOnlyATemporaryDefinitionIsSet()
         {
-            var response = _wordExistenceHelper.GetDefinition(new GetItemResponse
-            {
-                Item = new Dictionary<string, AttributeValue>
+            var response = _wordExistenceHelper.GetDefinition(new Dictionary<string, AttributeValue>
                 {
                     ["Word"] = new AttributeValue {S = TemporaryWord},
                     ["Status"] = new AttributeValue {S = "Temporary"},
                     ["TemporaryDefinition"] = new AttributeValue {S = "Temporary definition"},
                 }
-            });
+            );
             
             response.Should().Be("Temporary definition");
         }
@@ -42,16 +42,14 @@ namespace WordServiceExistenceProcessor.Tests.WordServiceTests
         [Fact]
         public void WhenOnlyAPermanentDefinitionIsSet()
         {
-            var response = _wordExistenceHelper.GetDefinition(new GetItemResponse
-            {
-                Item = new Dictionary<string, AttributeValue>
+            var response = _wordExistenceHelper.GetDefinition(new Dictionary<string, AttributeValue>
                 {
                     ["Word"] = new AttributeValue {S = PermanentWord},
                     ["Status"] = new AttributeValue {S = "Permanent"},
                     ["TemporaryDefinition"] = new AttributeValue {S = "Temporary definition"},
                     ["PermanentDefinition"] = new AttributeValue {S = "Permanent definition"}
                 }
-            });
+            );
             
             response.Should().Be("Permanent definition");
         }
@@ -60,16 +58,14 @@ namespace WordServiceExistenceProcessor.Tests.WordServiceTests
         public void WhenBothAPermanentAndTemporaryDefinitionAreSet()
         {
 
-            var response = _wordExistenceHelper.GetDefinition(new GetItemResponse
-            {
-                Item = new Dictionary<string, AttributeValue>
+            var response = _wordExistenceHelper.GetDefinition(new Dictionary<string, AttributeValue>
                 {
                     ["Word"] = new AttributeValue {S = BothWord},
                     ["Status"] = new AttributeValue {S = "Permanent"},
                     ["TemporaryDefinition"] = new AttributeValue {S = "Temporary definition"},
                     ["PermanentDefinition"] = new AttributeValue {S = "Permanent definition"}
                 }
-            });
+            );
 
             response.Should().Be("Permanent definition");
         }
@@ -77,14 +73,12 @@ namespace WordServiceExistenceProcessor.Tests.WordServiceTests
         [Fact]
         public void WhenNeitherAPermanentOrATemporaryDefinitionAreSet()
         {
-            var response = _wordExistenceHelper.GetDefinition(new GetItemResponse
-            {
-                Item = new Dictionary<string, AttributeValue>
+            var response = _wordExistenceHelper.GetDefinition(new Dictionary<string, AttributeValue>
                 {
                    ["Word"] = new AttributeValue {S = NeitherWord},
                    ["Status"] = new AttributeValue {S = "Temporary"},
                 }
-            });
+            );
             
             response.Should().Be("");
         }

@@ -1,10 +1,10 @@
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.Model;
 using Amazon.Extensions.NETCore.Setup;
 using Amazon.Lambda.Core;
 using Microsoft.Extensions.DependencyInjection;
 using WordServiceExistenceProcessor.DynamoDB;
+using WordServiceExistenceProcessor.Words.WordService;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
@@ -25,6 +25,8 @@ namespace WordServiceExistenceProcessor
             _serviceCollection.AddDefaultAWSOptions(new AWSOptions());
             _serviceCollection.AddAWSService<IAmazonDynamoDB>();
             _serviceCollection.AddTransient<IGetItemRequestWrapper, GetItemRequestWrapper>();
+            _serviceCollection.AddTransient<IBatchGetItemRequestWrapper, BatchGetItemRequestWrapper>();
+            _serviceCollection.AddTransient<IWordExistenceHelper, WordExistenceHelper>();
             _serviceCollection.AddTransient<Handler>();
         }
         

@@ -7,9 +7,9 @@ using Xunit;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.TestUtilities;
 
-using UpdateWordTable;
+using UpdateWordRequestProcessor;
 
-namespace UpdateWordTable.Tests
+namespace UpdateWordRequestProcessor.Tests
 {
     public class FunctionTest
     {

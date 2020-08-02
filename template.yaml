@@ -8,11 +8,26 @@ Resources:
       Description: Check existence of a word
       Role:
         Fn::GetAtt:
-          - WordServiceExistenceProcessorRole
+          - PartyGamesLambdaRole
           - Arn
       Code:
         S3Bucket: party-games-functions
         S3Key: WordServiceExistenceProcessorCode
+      Runtime: dotnetcore3.1
+
+  UpdateWordRequestProcessor:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: UpdateWordRequestProcessor
+      Handler: UpdateWordRequestProcessor::UpdateWordRequestProcessor.Function::FunctionHandlerAsync
+      Description: Add or update a word in the WordTable
+      Role:
+        Fn::GetAtt:
+          - PartyGamesLambdaRole
+          - Arn
+      Code:
+        S3Bucket: party-games-functions
+        S3Key: UpdateWordRequestProcessorCode
       Runtime: dotnetcore3.1
 
   WordTable:
@@ -49,7 +64,7 @@ Resources:
           KeyType: "HASH"
       TableName: "CategoryTable"
 
-  WordServiceExistenceProcessorRole:
+  PartyGamesLambdaRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:

@@ -12,6 +12,12 @@ namespace WordServiceExistenceProcessor.Tests.WordServiceTests
     public class WordStatusHelper
     {
         private const string SuccessWord = "test";
+        
+        private const string ScottishWord = "scottish";
+        private const string IrishWord = "irish";
+        private const string ObsoleteWord = "obsolete";
+        private const string ArchaicWord = "archaic";
+        
         private const string FailWord = "notAWord";
         private readonly WordExistenceHelper _wordExistenceHelper;
 
@@ -27,6 +33,46 @@ namespace WordServiceExistenceProcessor.Tests.WordServiceTests
                     ["Word"] = new AttributeValue {S = SuccessWord},
                     ["Status"] = new AttributeValue {S = "Temporary"},
                     ["TemporaryDefinition"] = new AttributeValue {S = "Temporary definition"}
+                }
+            });
+            
+            dynamoDbWrapper.GetDictionaryItem(ScottishWord).Returns(new GetItemResponse
+            {
+                Item = new Dictionary<string, AttributeValue>
+                {
+                    ["Word"] = new AttributeValue {S = ScottishWord},
+                    ["Status"] = new AttributeValue {S = "Temporary"},
+                    ["TemporaryDefinition"] = new AttributeValue {S = "Temporary scot. definition"}
+                }
+            });
+            
+            dynamoDbWrapper.GetDictionaryItem(IrishWord).Returns(new GetItemResponse
+            {
+                Item = new Dictionary<string, AttributeValue>
+                {
+                    ["Word"] = new AttributeValue {S = IrishWord},
+                    ["Status"] = new AttributeValue {S = "Temporary"},
+                    ["TemporaryDefinition"] = new AttributeValue {S = "Temporary [irish] definition"}
+                }
+            });
+            
+            dynamoDbWrapper.GetDictionaryItem(ObsoleteWord).Returns(new GetItemResponse
+            {
+                Item = new Dictionary<string, AttributeValue>
+                {
+                    ["Word"] = new AttributeValue {S = ObsoleteWord},
+                    ["Status"] = new AttributeValue {S = "Temporary"},
+                    ["TemporaryDefinition"] = new AttributeValue {S = "Temporary obs. definition"}
+                }
+            });
+            
+            dynamoDbWrapper.GetDictionaryItem(ArchaicWord).Returns(new GetItemResponse
+            {
+                Item = new Dictionary<string, AttributeValue>
+                {
+                    ["Word"] = new AttributeValue {S = ArchaicWord},
+                    ["Status"] = new AttributeValue {S = "Temporary"},
+                    ["TemporaryDefinition"] = new AttributeValue {S = "Temporary archaic definition"}
                 }
             });
             
@@ -51,6 +97,42 @@ namespace WordServiceExistenceProcessor.Tests.WordServiceTests
         public async Task WhenWordDoesNotExistAFailedWrappedResponseShouldBeReturned()
         {
             var response = await _wordExistenceHelper.GetWordStatus(FailWord);
+            var expected = new WordResponseWrapper(false);
+
+            response.ShouldBeEquivalentTo(expected);
+        }
+        
+        [Fact]
+        public async Task WhenWordExistsButIsScottishResponseShouldBeFalse()
+        {
+            var response = await _wordExistenceHelper.GetWordStatus(ScottishWord);
+            var expected = new WordResponseWrapper(false);
+
+            response.ShouldBeEquivalentTo(expected);
+        }
+        
+        [Fact]
+        public async Task WhenWordExistsButIsIrishResponseShouldBeFalse()
+        {
+            var response = await _wordExistenceHelper.GetWordStatus(IrishWord);
+            var expected = new WordResponseWrapper(false);
+
+            response.ShouldBeEquivalentTo(expected);
+        }
+        
+        [Fact]
+        public async Task WhenWordExistsButIsObsoleteResponseShouldBeFalse()
+        {
+            var response = await _wordExistenceHelper.GetWordStatus(ObsoleteWord);
+            var expected = new WordResponseWrapper(false);
+
+            response.ShouldBeEquivalentTo(expected);
+        }
+        
+        [Fact]
+        public async Task WhenWordExistsButIsArchaicResponseShouldBeFalse()
+        {
+            var response = await _wordExistenceHelper.GetWordStatus(ArchaicWord);
             var expected = new WordResponseWrapper(false);
 
             response.ShouldBeEquivalentTo(expected);

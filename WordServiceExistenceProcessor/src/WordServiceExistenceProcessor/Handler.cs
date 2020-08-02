@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -58,7 +59,19 @@ namespace WordServiceExistenceProcessor
             }
 
             if (input == response.WordResponse.Word)
-                finished = new WordResponseWrapper(true, new WordData(input, response.WordResponse?.Definition, response.WordResponse.Status));
+            {
+                var definitionList = response.WordResponse.Definition.Split(new Char[] {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '\n', ';'})
+                    .Where(y => !string.IsNullOrWhiteSpace(y))
+                    .ToList();
+
+                var isReal =  definitionList
+                    .Where(x => (!x.ToLower().Contains("obs.") && !x.ToLower().Contains("archaic") && !x.ToLower().Contains("scot.") && !x.ToLower().Contains("[irish]")))
+                    .ToList()
+                    .Any();
+            
+                if (isReal)
+                    finished = new WordResponseWrapper(true, new WordData(input, response.WordResponse?.Definition, response.WordResponse.Status));
+            }
 
             Console.WriteLine($"Processed response: {JsonConvert.SerializeObject(finished)}");
             

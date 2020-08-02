@@ -1,4 +1,6 @@
-﻿namespace WordServiceExistenceProcessor.Words.WordService
+﻿using System;
+
+namespace WordServiceExistenceProcessor.Words.WordService
 {
     public class WordData
     {

@@ -41,7 +41,7 @@ namespace WordServiceExistenceProcessor
 
             Console.WriteLine($"Batch response: {response?.WordResponse?.Word}");
 
-            if (response == null)
+            if (response == null || response.WordResponse == null)
                 return finished;
             
             if (input != response.WordResponse.Word)
@@ -54,11 +54,11 @@ namespace WordServiceExistenceProcessor
                     return finished;
                 
                 if (responseText.Contains(input))
-                    finished = new WordResponseWrapper(true, new WordData(input, response?.WordResponse?.Definition, WordStatus.Temporary));
+                    finished = new WordResponseWrapper(true, new WordData(input, response?.WordResponse?.Definition, WordStatus.Suffix));
             }
 
             if (input == response.WordResponse.Word)
-                finished = new WordResponseWrapper(true, new WordData(input, response?.WordResponse?.Definition, WordStatus.Temporary));
+                finished = new WordResponseWrapper(true, new WordData(input, response.WordResponse?.Definition, response.WordResponse.Status));
 
             Console.WriteLine($"Processed response: {JsonConvert.SerializeObject(finished)}");
             

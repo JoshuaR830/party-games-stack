@@ -5,6 +5,7 @@ using Xunit;
 using FluentAssertions;
 using NSubstitute;
 using WordServiceExistenceProcessor.DynamoDB;
+using WordServiceExistenceProcessor.Words.WebHelpers;
 using WordServiceExistenceProcessor.Words.WordService;
 
 namespace WordServiceExistenceProcessor.Tests.WordServiceTests
@@ -18,6 +19,7 @@ namespace WordServiceExistenceProcessor.Tests.WordServiceTests
             var dynamoDbWrapper = Substitute.For<IGetItemRequestWrapper>();
             var dynamoDbBatchWrapper = Substitute.For<IBatchGetItemRequestWrapper>();
             var wordExistenceHelper = Substitute.For<IWordExistenceHelper>();
+            var webDictionaryRequestHelper = Substitute.For<IWebDictionaryRequestHelper>();
 
             dynamoDbWrapper.GetDictionaryItem(input).Returns(new GetItemResponse
             {
@@ -28,10 +30,25 @@ namespace WordServiceExistenceProcessor.Tests.WordServiceTests
                 }
             });
             
-            var handler = new Handler(dynamoDbWrapper, dynamoDbBatchWrapper, wordExistenceHelper);
+            dynamoDbWrapper.GetDictionaryItem(input).Returns(new GetItemResponse
+            {
+                Item = new Dictionary<string, AttributeValue>
+                {
+                    ["Status"] = new AttributeValue {S = "Temporary"},
+                    ["TemporaryDefinition"] = new AttributeValue {S = "The definition of the word"}
+                }
+            });
+
+            wordExistenceHelper.GetWordWithSuffix(input).Returns(new WordResponseWrapper(true,
+                new WordData(input, "The definition of the word", WordStatus.Temporary)));
+            
+            var handler = new Handler(dynamoDbWrapper, dynamoDbBatchWrapper, wordExistenceHelper, webDictionaryRequestHelper);
             var isWord = await handler.Handle(input);
 
-            isWord.Should().BeTrue();
+            isWord.IsSuccessful.Should().BeTrue();
+            isWord.WordResponse.Word.Should().Be("test");
+            isWord.WordResponse.Definition.Should().Be("The definition of the word");
+            isWord.WordResponse.Status.Should().Be(WordStatus.Temporary);
         }
         
         [Fact]
@@ -41,16 +58,17 @@ namespace WordServiceExistenceProcessor.Tests.WordServiceTests
             var dynamoDbWrapper = Substitute.For<IGetItemRequestWrapper>();
             var dynamoDbBatchWrapper = Substitute.For<IBatchGetItemRequestWrapper>();
             var wordExistenceHelper = Substitute.For<IWordExistenceHelper>();
+            var webDictionaryRequestHelper = Substitute.For<IWebDictionaryRequestHelper>();
 
             dynamoDbWrapper.GetDictionaryItem(input).Returns(new GetItemResponse
             {
                 IsItemSet = false
             });
             
-            var handler = new Handler(dynamoDbWrapper, dynamoDbBatchWrapper, wordExistenceHelper);
+            var handler = new Handler(dynamoDbWrapper, dynamoDbBatchWrapper, wordExistenceHelper, webDictionaryRequestHelper);
             var isWord = await handler.Handle(input);
 
-            isWord.Should().BeFalse();
+            isWord.IsSuccessful.Should().BeFalse();
         }
     }
 }

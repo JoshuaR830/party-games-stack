@@ -28,6 +28,20 @@ namespace WordServiceExistenceProcessor.Words.WordService
             var wordItem = wordResponse.Item;
 
             var definition = GetDefinition(wordResponse.Item);
+            
+            var definitionList = definition.Split(new Char[] {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '\n', ';'})
+                .Where(y => !string.IsNullOrWhiteSpace(y))
+                .ToList();
+
+            var isReal =  definitionList
+                .Where(x => (!x.ToLower().Contains("obs.") && !x.ToLower().Contains("archaic") && !x.ToLower().Contains("scot.") && !x.ToLower().Contains("[irish]")))
+                .ToList()
+                .Any();
+            
+            if (!isReal)
+                return new WordResponseWrapper(false);
+
+            
             var wordData = new WordData(wordItem["Word"].S, definition, Enum.Parse<WordStatus>(wordItem["Status"].S) );
             
             return new WordResponseWrapper(true, wordData);
